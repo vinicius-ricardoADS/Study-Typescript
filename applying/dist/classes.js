@@ -84,4 +84,4 @@ accounting.mostRecentReport = accounting.mostRecentReport;
 console.log(accounting.mostRecentReport);
 accounting.addEmployee('Manu');
 accounting.describe();
-//# sourceMappingURL=class.js.map
+//# sourceMappingURL=classes.js.map

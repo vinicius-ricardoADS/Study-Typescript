@@ -1,15 +1,21 @@
 "use strict";
-const add = (...numbers) => {
-    return numbers.reduce((curResult, curValue) => {
-        return curResult + curValue;
-    }, 0);
+let add;
+add = (n1, n2) => {
+    return n1 + n2;
 };
-const sum = add(10.59, 1.2, 9, 0, 3);
-const person = {
-    firstName: 'Vinicius',
-    age: 21
-};
-// nomes de constantes precisam ser as mesmas que as
-// propriedades
-const { firstName, age } = person;
+class Person {
+    constructor(n) {
+        this.age = 30;
+        if (n)
+            this.name = n;
+        else
+            console.log('Hi!');
+    }
+    greet(phrase) {
+        console.log(phrase + ' ' + this.name);
+    }
+}
+let user;
+user = new Person();
+console.log(user);
 //# sourceMappingURL=app.js.map
