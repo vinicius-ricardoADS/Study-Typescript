@@ -1,21 +1,31 @@
 "use strict";
-let add;
-add = (n1, n2) => {
-    return n1 + n2;
+;
+;
+const e1 = {
+    name: 'Max',
+    privileges: ['create-server'],
+    startDate: new Date()
 };
-class Person {
-    constructor(n) {
-        this.age = 30;
-        if (n)
-            this.name = n;
-        else
-            console.log('Hi!');
-    }
-    greet(phrase) {
-        console.log(phrase + ' ' + this.name);
-    }
+function add(a, b) {
+    if (typeof a === 'string' || typeof b === 'string')
+        return a.toString() + b.toString();
+    return a + b;
 }
-let user;
-user = new Person();
-console.log(user);
+// Type Guards
+function printEmployeeInformation(emp) {
+    console.log('Name: ' + emp.name);
+    if ('privileges' in emp)
+        console.log('Privileges: ' + emp.privileges);
+    if ('startDate' in emp)
+        console.log('Date: ' + emp.startDate);
+}
+printEmployeeInformation(e1);
+// Type Casting
+// const userInputElement = <HTMLInputElement>document.getElementById('user-input')!;
+const userInputElement = document.getElementById('user-input');
+userInputElement.value = 'Hi there!';
+const errorBag = {
+    email: 'Not a valid email',
+    username: 'Must start with a capital character'
+};
 //# sourceMappingURL=app.js.map
