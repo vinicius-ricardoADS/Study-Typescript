@@ -12,3 +12,4 @@ const person = {
 // nomes de constantes precisam ser as mesmas que as
 // propriedades
 const { firstName, age } = person;
+//# sourceMappingURL=app.js.map
