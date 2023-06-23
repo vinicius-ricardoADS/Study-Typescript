@@ -1,56 +1,67 @@
 "use strict";
-const names = [];
-const promise = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        resolve('This is done!');
-    }, 2000);
-});
-function merge(objA, objB) {
-    return Object.assign(objA, objB);
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+function Logger(logString) {
+    return function (target) {
+        console.log(logString);
+        console.log(target);
+    };
 }
-const mergedObj = merge({ name: 'Max', hobbies: ['Sports'] }, { age: 30 });
-console.log(mergedObj);
-function countAndDescribe(element) {
-    let descriptionText = 'Got no value.';
-    if (element.length === 1)
-        descriptionText = 'Got ' + element.length + ' elements.';
-    else if (element.length > 1)
-        descriptionText = 'Got ' + element.length + ' elements';
-    return [element, descriptionText];
+function WithTemplate(template, hookId) {
+    return function (constructor) {
+        const hookElement = document.getElementById(hookId);
+        const p = new constructor();
+        if (hookElement) {
+            hookElement.innerHTML = template;
+            hookElement.querySelector('h1').textContent = p.name;
+        }
+    };
 }
-function extractAndConvert(obj, key) {
-    return 'Value: ' + obj[key];
-}
-extractAndConvert({ name: 'Max' }, 'name');
-class DataStorage {
+let Persona = class Persona {
     constructor() {
-        this.data = [];
+        this.name = 'Max';
+        console.log('Creating person object...');
     }
-    addItem(item) {
-        this.data.push(item);
+};
+Persona = __decorate([
+    Logger('LOGGING - PERSONA'),
+    WithTemplate('<h1>My persona object</h1>', 'app')
+], Persona);
+const pers = new Persona();
+console.log(pers);
+function Log(target, propertyName) {
+    console.log('Property decorator!');
+    console.log(target, propertyName);
+}
+function Log2(target, propertyName, descriptor) {
+    console.log('Accessor decorator!');
+    console.log(target);
+    console.log(propertyName);
+    console.log(descriptor);
+}
+class Product {
+    set price(val) {
+        if (val > 0)
+            this._price = val;
+        else
+            throw new Error('Invalid price - should be positive');
     }
-    removeItem(item) {
-        this.data.splice(this.data.indexOf(item), 1);
+    constructor(t, p) {
+        this.title = t;
+        this._price = p;
     }
-    getItems() {
-        return [...this.data];
+    getPriceWithTax(tax) {
+        return this._price * (1 + tax);
     }
 }
-const textStorage = new DataStorage();
-textStorage.addItem('Max');
-textStorage.addItem('Manu');
-textStorage.removeItem('Max');
-console.log(textStorage.getItems());
-// Generic Types <Partial>
-// Tem como função permitir propriedades de tipos ou interfaces
-// serem temporariamente opcionais para algum tipo de tratamento
-function createCourseGoal(title, description, date) {
-    let courseGoal = {};
-    courseGoal.titile = title;
-    courseGoal.description = description;
-    courseGoal.completeUntil = date;
-    return courseGoal; // ou courseGoal as CourseGoal
-}
-const sports = ['Sports', 'Bascket'];
-// sports.push('Futbol'); não funciona pois é apenas de leitura
+__decorate([
+    Log
+], Product.prototype, "title", void 0);
+__decorate([
+    Log2
+], Product.prototype, "price", null);
 //# sourceMappingURL=app.js.map
