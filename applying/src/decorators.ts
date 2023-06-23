@@ -1,98 +1,95 @@
-"use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-function Logger(logString) {
-    return function (target) {
+function Logger(logString: string) { // decorator factory
+    return function (target: Function) {
         console.log(logString);
         console.log(target);
-    };
+    }
 }
-function WithTemplate(template, hookId) {
-    return function (constructor) {
+
+function WithTemplate(template: string, hookId: string) {
+    return function(constructor: any) {
         const hookElement = document.getElementById(hookId);
         const p = new constructor();
         if (hookElement) {
             hookElement.innerHTML = template;
-            hookElement.querySelector('h1').textContent = p.name;
+            hookElement.querySelector('h1')!.textContent = p.name;
         }
-    };
+    }
 }
-let Persona = class Persona {
+
+@Logger('LOGGING - PERSONA')
+@WithTemplate('<h1>My persona object</h1>', 'app')
+class Persona {
+    name = 'Max';
     constructor() {
-        this.name = 'Max';
         console.log('Creating person object...');
     }
-};
-Persona = __decorate([
-    Logger('LOGGING - PERSONA'),
-    WithTemplate('<h1>My persona object</h1>', 'app')
-], Persona);
+}
+
 const pers = new Persona();
 console.log(pers);
-function Log(target, propertyName) {
+
+function Log(target: any, propertyName: string | Symbol) {
     console.log('Property decorator!');
     console.log(target, propertyName);
 }
+
 // Accessor decorator utilizado para acessar propriedades da classe
-function Log2(target, propertyName, descriptor) {
+function Log2(target: any, propertyName: string | Symbol, descriptor: PropertyDescriptor) {
     console.log('Accessor decorator!');
     console.log(target);
     console.log(propertyName);
     console.log(descriptor);
 }
+
 // Method decorator utilizado para acessar ou definir propriedades
 // de métodos/funções presentes na classe
-function Log3(target, propertyName, descriptor) {
+function Log3(target: any, propertyName: string | Symbol, descriptor: PropertyDescriptor) {
     console.log('Method decorator!');
     console.log(target);
     console.log(propertyName);
     console.log(descriptor);
 }
+
 // Parameter decorator utilizado para acessar ou definir parâmetros
 // presentes nos métodos/funções presentes na classe
-function Log4(target, propertyName, position) {
+function Log4(target: any, propertyName: string | Symbol, position: number) {
     console.log('Parameter decorator!');
     console.log(target);
     console.log(propertyName);
     console.log(position);
 }
+
 class Product {
-    set price(val) {
+
+    @Log
+    title: string;
+    private _price: number;
+
+    @Log2
+    set price(val: number) {
         if (val > 0)
             this._price = val;
         else
             throw new Error('Invalid price - should be positive');
     }
-    constructor(t, p) {
+
+    constructor(t: string, p: number) {
         this.title = t;
         this._price = p;
     }
-    getPriceWithTax(tax) {
+
+    @Log3
+    getPriceWithTax(@Log4 tax: number) {
         return this._price * (1 + tax);
     }
 }
-__decorate([
-    Log
-], Product.prototype, "title", void 0);
-__decorate([
-    Log2
-], Product.prototype, "price", null);
-__decorate([
-    Log3,
-    __param(0, Log4)
-], Product.prototype, "getPriceWithTax", null);
+
 const p1 = new Product('Book', 19);
 const p2 = new Product('Book 2', 29);
-function Autobind(_, _2, descriptor) {
+
+function Autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
-    const adjDescriptor = {
+    const adjDescriptor: PropertyDescriptor = {
         configurable: true,
         enumerable: false,
         get() {
@@ -102,43 +99,56 @@ function Autobind(_, _2, descriptor) {
     };
     return adjDescriptor;
 }
+
 class Printer {
-    constructor() {
-        this.message = 'This works!';
-    }
+    message = 'This works!';
+
+    @Autobind
     showMessage() {
         console.log(this.message);
     }
 }
-__decorate([
-    Autobind
-], Printer.prototype, "showMessage", null);
+
 const p = new Printer();
-const button = document.querySelector("button");
+
+const button = document.querySelector("button")!;
 button.addEventListener("click", p.showMessage);
-const registeredValidators = {};
-function Required(target, propertyName) {
+
+interface ValidatorConfig {
+    [property: string]: {
+        [validatableProp: string]: string[]
+    }
+}
+
+const registeredValidators: ValidatorConfig = {};
+
+function Required(target: any, propertyName: string) {
     registeredValidators[target.constructor.name] = {
+        ...registeredValidators[target.constructor.name],
         [propertyName]: ['required']
     };
 }
-function PositiveNumber(target, propertyName) {
+
+function PositiveNumber(target: any, propertyName: string) {
     registeredValidators[target.constructor.name] = {
+        ...registeredValidators[target.constructor.name],
         [propertyName]: ['positive']
     };
 }
-function validate(obj) {
+
+function validate(obj: any) {
     const objValidatorConfig = registeredValidators[obj.constructor.name];
     if (!objValidatorConfig)
         return true;
+    let isValid = true;
     for (const prop in objValidatorConfig) {
         for (const validator of objValidatorConfig[prop]) {
             switch (validator) {
                 case 'required':
-                    return !!obj[prop];
+                    isValid = isValid && !!obj[prop];
                     break;
                 case 'positive':
-                    return obj[prop] > 0;
+                    isValid = isValid && obj[prop] > 0;
                     break;
                 default:
                     console.log('Invalid propertys');
@@ -146,32 +156,36 @@ function validate(obj) {
             }
         }
     }
-    return true;
+    return isValid;
 }
+
 class Course {
-    constructor(t, p) {
+    @Required
+    title: string;
+    @PositiveNumber
+    price: number;
+
+    constructor(t: string, p: number) {
         this.title = t;
         this.price = p;
     }
 }
-__decorate([
-    Required
-], Course.prototype, "title", void 0);
-__decorate([
-    PositiveNumber
-], Course.prototype, "price", void 0);
-const courseForm = document.querySelector("form");
+
+const courseForm = document.querySelector("form")!;
 courseForm.addEventListener("submit", e => {
     e.preventDefault();
-    const titleEl = document.getElementById("title");
-    const priceEl = document.getElementById("price");
+    const titleEl = document.getElementById("title") as HTMLInputElement;
+    const priceEl = document.getElementById("price") as HTMLInputElement;
+
     const title = titleEl.value;
     const price = +priceEl.value; // transforma para number
+
     const createdCourse = new Course(title, price);
+
     if (!validate(createdCourse)) {
         alert('Invalid input, please try again!');
         return;
     }
+    
     console.log(createdCourse);
-});
-//# sourceMappingURL=app.js.map
+})

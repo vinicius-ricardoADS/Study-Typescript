@@ -118,27 +118,24 @@ const button = document.querySelector("button");
 button.addEventListener("click", p.showMessage);
 const registeredValidators = {};
 function Required(target, propertyName) {
-    registeredValidators[target.constructor.name] = {
-        [propertyName]: ['required']
-    };
+    registeredValidators[target.constructor.name] = Object.assign(Object.assign({}, registeredValidators[target.constructor.name]), { [propertyName]: ['required'] });
 }
 function PositiveNumber(target, propertyName) {
-    registeredValidators[target.constructor.name] = {
-        [propertyName]: ['positive']
-    };
+    registeredValidators[target.constructor.name] = Object.assign(Object.assign({}, registeredValidators[target.constructor.name]), { [propertyName]: ['positive'] });
 }
 function validate(obj) {
     const objValidatorConfig = registeredValidators[obj.constructor.name];
     if (!objValidatorConfig)
         return true;
+    let isValid = true;
     for (const prop in objValidatorConfig) {
         for (const validator of objValidatorConfig[prop]) {
             switch (validator) {
                 case 'required':
-                    return !!obj[prop];
+                    isValid = isValid && !!obj[prop];
                     break;
                 case 'positive':
-                    return obj[prop] > 0;
+                    isValid = isValid && obj[prop] > 0;
                     break;
                 default:
                     console.log('Invalid propertys');
@@ -146,7 +143,7 @@ function validate(obj) {
             }
         }
     }
-    return true;
+    return isValid;
 }
 class Course {
     constructor(t, p) {
@@ -174,4 +171,4 @@ courseForm.addEventListener("submit", e => {
     }
     console.log(createdCourse);
 });
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=decorators.js.map
